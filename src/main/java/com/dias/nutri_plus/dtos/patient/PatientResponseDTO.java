@@ -1,4 +1,4 @@
-package com.dias.nutri_plus.dtos;
+package com.dias.nutri_plus.dtos.patient;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

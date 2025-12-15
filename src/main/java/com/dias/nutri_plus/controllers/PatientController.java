@@ -1,7 +1,8 @@
 package com.dias.nutri_plus.controllers;
 
-import com.dias.nutri_plus.dtos.PatientRequestDTO;
-import com.dias.nutri_plus.dtos.PatientResponseDTO;
+import com.dias.nutri_plus.dtos.patient.PatientRequestDTO;
+import com.dias.nutri_plus.dtos.patient.PatientResponseDTO;
+import com.dias.nutri_plus.entities.Patient;
 import com.dias.nutri_plus.services.PatientService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -44,7 +45,7 @@ public class PatientController {
 
   @Operation(summary = "Find Patient by ID", operationId = "findPatientById")
   @GetMapping("/{id}")
-  public ResponseEntity<PatientResponseDTO> findById(@PathVariable UUID id) {
+  public ResponseEntity<Patient> findById(@PathVariable UUID id) {
     return ResponseEntity.ok(patientService.findById(id));
   }
 }

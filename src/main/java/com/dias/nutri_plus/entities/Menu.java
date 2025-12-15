@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,7 +29,7 @@ public class Menu extends AuditableEntity{
   @JoinColumn(name = "patient_id", nullable = false, unique = true)
   private Patient patient;
 
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-  @JoinColumn(name = "meal_id", nullable = false)
-  private List<Meal> meals;
+    @OneToMany(mappedBy = "menu",cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Meal> meals = new ArrayList<>();
 }

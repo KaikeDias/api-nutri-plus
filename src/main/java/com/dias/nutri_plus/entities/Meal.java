@@ -1,5 +1,6 @@
 package com.dias.nutri_plus.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +14,6 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "meals")
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -29,7 +29,11 @@ public class Meal extends AuditableEntity{
   @Column(nullable = false)
   private LocalTime mealTime;
 
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-  @JoinColumn(name = "meal_id", nullable = false)
+  @OneToMany( mappedBy = "meal", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Food> foods;
+
+  @JsonIgnore
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "menu_id", nullable = false)
+  private Menu menu;
 }

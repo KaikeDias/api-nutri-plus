@@ -1,4 +1,4 @@
-package com.dias.nutri_plus.dtos;
+package com.dias.nutri_plus.dtos.patient;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

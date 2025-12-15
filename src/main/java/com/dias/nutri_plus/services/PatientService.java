@@ -1,7 +1,7 @@
 package com.dias.nutri_plus.services;
 
-import com.dias.nutri_plus.dtos.PatientRequestDTO;
-import com.dias.nutri_plus.dtos.PatientResponseDTO;
+import com.dias.nutri_plus.dtos.patient.PatientRequestDTO;
+import com.dias.nutri_plus.dtos.patient.PatientResponseDTO;
 import com.dias.nutri_plus.entities.Patient;
 import com.dias.nutri_plus.exceptions.NotFoundError;
 import com.dias.nutri_plus.mappers.PatientMapper;
@@ -24,10 +24,8 @@ public class PatientService {
     return patientMapper.entityToResponseDTO(patientRepository.save(patient));
   }
 
-  public PatientResponseDTO findById(UUID id) {
-    Patient patient = patientRepository.findById(id).orElseThrow(() -> new NotFoundError("Patient not found"));
-
-    return patientMapper.entityToResponseDTO(patient);
+  public Patient findById(UUID id) {
+    return patientRepository.findById(id).orElseThrow(() -> new NotFoundError("Patient not found"));
   }
 
   public List<PatientResponseDTO> findAll() {

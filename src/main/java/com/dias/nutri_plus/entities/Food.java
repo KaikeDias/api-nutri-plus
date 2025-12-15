@@ -1,5 +1,7 @@
 package com.dias.nutri_plus.entities;
 
+import com.dias.nutri_plus.enums.Unit;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +14,6 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "foods")
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -23,16 +24,14 @@ public class Food extends AuditableEntity {
   private UUID id;
 
   @Column(nullable = false)
-  private String title;
-
-  @Column(nullable = false)
   private String name;
 
   @Column(nullable = false)
   private String quantity;
 
   @Column(nullable = false)
-  private String unit;
+  @Enumerated(EnumType.STRING)
+  private Unit unit;
 
   @Column(nullable = false)
   private String homeQuantity;
@@ -40,5 +39,12 @@ public class Food extends AuditableEntity {
   @Column(nullable = false)
   private String homeUnit;
 
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "parent_food_id")
   private List<Food> substitutions;
+
+  @JsonIgnore
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "meal_id", nullable = false)
+  private Meal meal;
 }

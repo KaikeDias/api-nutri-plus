@@ -1,5 +1,6 @@
 package com.dias.nutri_plus.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,6 +44,7 @@ public class Patient extends AuditableEntity {
 
   private Double weight;
 
+  @JsonIgnore
   @OneToOne(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
   private Menu menu;
 }

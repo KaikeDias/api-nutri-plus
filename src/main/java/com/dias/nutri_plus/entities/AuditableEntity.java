@@ -1,8 +1,6 @@
 package com.dias.nutri_plus.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -26,5 +24,15 @@ public abstract class AuditableEntity implements Serializable {
 
   @Column(name = "deleted_at")
   private Instant deletedAt;
+
+  @PrePersist
+  protected void onCreate() {
+    createdAt = Instant.now();
+  }
+
+  @PreUpdate
+  protected void onUpdate() {
+    updatedAt = Instant.now();
+  }
 }
 
