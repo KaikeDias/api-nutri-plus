@@ -1,4 +1,4 @@
-package com.dias.nutri_plus.entity;
+package com.dias.nutri_plus.entities;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

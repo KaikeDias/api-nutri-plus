@@ -1,4 +1,4 @@
-package com.dias.nutri_plus.entity;
+package com.dias.nutri_plus.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
