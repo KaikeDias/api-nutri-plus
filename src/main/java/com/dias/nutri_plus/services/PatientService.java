@@ -18,11 +18,6 @@ public class PatientService {
   private final PatientRepository patientRepository;
   private final PatientMapper patientMapper;
 
-//  public PatientService(PatientRepository patientRepository, PatientMapper patientMapper) {
-//    this.patientRepository = patientRepository;
-//    this.patientMapper = patientMapper;
-//  }
-
   public PatientResponseDTO create(PatientRequestDTO dto) {
     Patient patient = patientMapper.requestToEntity(dto);
 
