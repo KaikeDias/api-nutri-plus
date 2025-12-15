@@ -18,7 +18,6 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "patients")
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -29,7 +28,7 @@ public class Patient extends AuditableEntity {
   private UUID id;
 
   @Column(nullable = false)
-  private String fullName;
+  private String name;
 
   @Column(nullable = false, unique = true)
   private String cpf;
