@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -26,4 +27,8 @@ public class Menu extends AuditableEntity{
   @OneToOne
   @JoinColumn(name = "patient_id", nullable = false, unique = true)
   private Patient patient;
+
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "meal_id", nullable = false)
+  private List<Meal> meals;
 }
