@@ -40,10 +40,8 @@ public class MenuService {
 
     Meal newMeal = mealMapper.requestToEntity(mealDto);
 
-// set meal → menu
     newMeal.setMenu(menu);
 
-// 🔴 ESSENCIAL: set meal em TODOS os foods
     bindMealRecursively(newMeal, newMeal.getFoods());
 
     menu.getMeals().add(newMeal);
@@ -63,7 +61,4 @@ public class MenuService {
       }
     }
   }
-
-
-
 }
