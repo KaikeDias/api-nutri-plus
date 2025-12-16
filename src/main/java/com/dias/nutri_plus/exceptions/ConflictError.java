@@ -2,11 +2,11 @@ package com.dias.nutri_plus.exceptions;
 
 import java.io.Serial;
 
-public class NotFoundError extends RuntimeException {
+public class ConflictError extends RuntimeException {
   @Serial
   private static final long serialVersionUID = 1L;
 
-  public NotFoundError(String message) {
+  public ConflictError(String message) {
     super(message);
   }
 }
