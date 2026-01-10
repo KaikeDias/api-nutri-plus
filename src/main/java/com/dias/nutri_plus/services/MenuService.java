@@ -47,26 +47,11 @@ public class MenuService {
         Menu menu = getOrCreateMenu(patient);
 
         Meal newMeal = mealMapper.requestToEntity(mealDto);
-
         newMeal.setMenu(menu);
-
-        bindMealRecursively(newMeal, newMeal.getFoods());
 
         menu.getMeals().add(newMeal);
 
         return menuRepository.save(menu);
-    }
-
-    private void bindMealRecursively(Meal meal, List<Food> foods) {
-        if (foods == null) return;
-
-        for (Food food : foods) {
-            food.setMeal(meal);
-
-            if (food.getSubstitutions() != null) {
-                bindMealRecursively(meal, food.getSubstitutions());
-            }
-        }
     }
 
     public Meal updateMeal(UUID mealId, MealRequestDTO mealDto) {
@@ -77,9 +62,6 @@ public class MenuService {
         meal.setMealTime(mealDto.getMealTime());
 
         List<Food> foods = foodMapper.requestListToEntityList(mealDto.getFoods());
-
-        bindMealRecursively(meal, foods);
-
         meal.getFoods().clear();
         meal.getFoods().addAll(foods);
 

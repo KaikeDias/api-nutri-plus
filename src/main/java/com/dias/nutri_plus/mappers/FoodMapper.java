@@ -3,8 +3,10 @@ package com.dias.nutri_plus.mappers;
 import com.dias.nutri_plus.dtos.menu.BaseFoodRequestDTO;
 import com.dias.nutri_plus.dtos.menu.FoodRequestDTO;
 import com.dias.nutri_plus.entities.Food;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
@@ -22,5 +24,14 @@ public interface FoodMapper {
     List<Food> requestListToEntityList(List<FoodRequestDTO> dtos);
 
     Food substitutionToEntity(BaseFoodRequestDTO dto);
+
+    @AfterMapping
+    default void linkSubstitutions(@MappingTarget Food food) {
+        if (food.getSubstitutions() != null) {
+            for (Food sub : food.getSubstitutions()) {
+                sub.setParentFood(food);
+            }
+        }
+    }
 }
 
