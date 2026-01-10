@@ -79,4 +79,8 @@ public class MenuService {
 
         return mealRepository.findAllByMenuId(menu.getId(), pageable);
     }
+
+    public void deleteMeal(UUID mealId) {
+        mealRepository.deleteById(mealId);
+    }
 }
