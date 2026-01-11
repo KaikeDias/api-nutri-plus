@@ -5,6 +5,7 @@ import com.dias.nutri_plus.entities.Food;
 import com.dias.nutri_plus.entities.Meal;
 import com.dias.nutri_plus.entities.Menu;
 import com.dias.nutri_plus.entities.Patient;
+import com.dias.nutri_plus.exceptions.ConflictError;
 import com.dias.nutri_plus.exceptions.NotFoundError;
 import com.dias.nutri_plus.mappers.FoodMapper;
 import com.dias.nutri_plus.mappers.MealMapper;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static com.dias.nutri_plus.utils.validators.MealValidator.validateMealTitle;
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +48,8 @@ public class MenuService {
     public Menu addMeal(UUID patientID, MealRequestDTO mealDto) {
         Patient patient = patientService.findById(patientID);
         Menu menu = getOrCreateMenu(patient);
+
+        validateMealTitle(mealRepository, menu.getId(), mealDto.getTitle());
 
         Meal newMeal = mealMapper.requestToEntity(mealDto);
         newMeal.setMenu(menu);
