@@ -27,8 +27,11 @@ import static com.dias.nutri_plus.utils.validators.MealValidator.validateMealTit
 public class MenuService {
 
     private final MenuRepository menuRepository;
-    private final PatientService patientService;
     private final MealRepository mealRepository;
+
+    private final PatientService patientService;
+    private final AuthService authService;
+
     private final MealMapper mealMapper;
     private final FoodMapper foodMapper;
 
@@ -63,6 +66,10 @@ public class MenuService {
         Meal meal = mealRepository.findById(mealId)
                 .orElseThrow(() -> new NotFoundError("Meal not found"));
 
+        if (!meal.getMenu().getPatient().getKeycloakUserId().equals(authService.getCurrentUserSub())) {
+            throw new NotFoundError("Meal not found for current user");
+        }
+
         meal.setTitle(mealDto.getTitle());
         meal.setMealTime(mealDto.getMealTime());
 
@@ -86,6 +93,13 @@ public class MenuService {
     }
 
     public void deleteMeal(UUID mealId) {
+        Meal meal = mealRepository.findById(mealId)
+                .orElseThrow(() -> new NotFoundError("Meal not found"));
+
+        if (!meal.getMenu().getPatient().getKeycloakUserId().equals(authService.getCurrentUserSub())) {
+            throw new NotFoundError("Meal not found for current user");
+        }
+
         mealRepository.deleteById(mealId);
     }
 }

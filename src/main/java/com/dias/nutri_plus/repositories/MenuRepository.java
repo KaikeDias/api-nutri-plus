@@ -10,5 +10,8 @@ import java.util.UUID;
 
 @Repository
 public interface MenuRepository extends JpaRepository<Menu, UUID> {
-  Optional<Menu> findByPatient(Patient patient);
+
+    Optional<Menu> findByPatient(Patient patient);
+
+    Optional<Menu> findByIdAndPatient_KeycloakUserId(UUID menuId, String keycloakUserId);
 }
