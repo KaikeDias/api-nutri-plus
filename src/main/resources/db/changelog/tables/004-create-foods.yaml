@@ -1,0 +1,80 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004
+      author: Kaike Dias
+      changes:
+        - createTable:
+            tableName: foods
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: quantity
+                  type: double
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: unit
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: home_quantity
+                  type: double
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: home_unit
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: meal_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: parent_food_id
+                  type: UUID
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+
+              - column:
+                  name: deleted_at
+                  type: TIMESTAMP
+
+        - addForeignKeyConstraint:
+            baseTableName: foods
+            baseColumnNames: meal_id
+            referencedTableName: meals
+            referencedColumnNames: id
+            constraintName: fk_food_meal
+
+        - addForeignKeyConstraint:
+            baseTableName: foods
+            baseColumnNames: parent_food_id
+            referencedTableName: foods
+            referencedColumnNames: id
+            constraintName: fk_food_parent

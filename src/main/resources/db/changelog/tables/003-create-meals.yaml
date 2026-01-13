@@ -1,0 +1,51 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003
+      author: Kaike Dias
+      changes:
+        - createTable:
+            tableName: meals
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: meal_time
+                  type: TIME
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: menu_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+
+              - column:
+                  name: deleted_at
+                  type: TIMESTAMP
+
+        - addForeignKeyConstraint:
+            baseTableName: meals
+            baseColumnNames: menu_id
+            referencedTableName: menus
+            referencedColumnNames: id
+            constraintName: fk_meal_menu

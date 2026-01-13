@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/tables/001-create-patients.yaml
+
+  - include:
+      file: db/changelog/tables/002-create-menus.yaml
+
+  - include:
+      file: db/changelog/tables/003-create-meals.yaml
+
+  - include:
+      file: db/changelog/tables/004-create-foods.yaml
