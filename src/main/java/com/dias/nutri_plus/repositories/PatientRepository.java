@@ -4,11 +4,16 @@ import com.dias.nutri_plus.entities.Patient;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, UUID> {
 
-  Optional<Patient> findByCpf(String cpf);
+  Optional<Patient> findByCpfAndKeycloakUserId(String cpf, String keycloakUserId);
+
+  Optional<Patient> findByIdAndKeycloakUserId(UUID id, String keycloakUserId);
+
+  List<Patient> findAllByKeycloakUserId(String keycloakUserId);
 }

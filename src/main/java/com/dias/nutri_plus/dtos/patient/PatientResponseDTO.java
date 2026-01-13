@@ -23,4 +23,6 @@ public class PatientResponseDTO {
   private Double height;
 
   private Double weight;
+
+  private String keycloakUserId;
 }

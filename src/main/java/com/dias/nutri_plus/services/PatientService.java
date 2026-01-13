@@ -19,21 +19,27 @@ import java.util.UUID;
 public class PatientService {
   private final PatientRepository patientRepository;
   private final PatientMapper patientMapper;
+  private final AuthService authService;
 
   public PatientResponseDTO create(PatientRequestDTO dto) {
     validateDuplicity(dto.getCpf());
 
     Patient patient = patientMapper.requestToEntity(dto);
+    patient.setKeycloakUserId(authService.getCurrentUserSub());
 
     return patientMapper.entityToResponseDTO(patientRepository.save(patient));
   }
 
   public Patient findById(UUID id) {
-    return patientRepository.findById(id).orElseThrow(() -> new NotFoundError("Patient not found"));
+    return patientRepository
+            .findByIdAndKeycloakUserId(id, authService.getCurrentUserSub())
+            .orElseThrow(() ->
+                    new NotFoundError("Patient not found")
+            );
   }
 
   public List<PatientResponseDTO> findAll() {
-    List<Patient> patients = patientRepository.findAll();
+    List<Patient> patients = patientRepository.findAllByKeycloakUserId(authService.getCurrentUserSub());
 
     return patients.stream()
         .map(patientMapper::entityToResponseDTO)
@@ -41,7 +47,7 @@ public class PatientService {
   }
 
   private void validateDuplicity(String cpf) {
-    Optional<Patient> existingPatient = patientRepository.findByCpf(cpf);
+    Optional<Patient> existingPatient = patientRepository.findByCpfAndKeycloakUserId(cpf, authService.getCurrentUserSub());
 
     if(existingPatient.isPresent()) {
       throw new ConflictError("A patient with this CPF already exists!");

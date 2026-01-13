@@ -44,6 +44,9 @@ public class Patient extends AuditableEntity {
 
   private Double weight;
 
+  @Column(nullable = false, unique = true, length = 36)
+  private String keycloakUserId;
+
   @JsonIgnore
   @OneToOne(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
   private Menu menu;
