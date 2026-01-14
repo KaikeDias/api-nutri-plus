@@ -1,5 +1,6 @@
 package com.dias.nutri_plus.services;
 
+import com.dias.nutri_plus.dtos.patient.PatientFilterDTO;
 import com.dias.nutri_plus.dtos.patient.PatientRequestDTO;
 import com.dias.nutri_plus.dtos.patient.PatientResponseDTO;
 import com.dias.nutri_plus.entities.Patient;
@@ -9,9 +10,15 @@ import com.dias.nutri_plus.mappers.PatientMapper;
 import com.dias.nutri_plus.repositories.PatientRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 import java.util.Optional;
@@ -119,24 +126,105 @@ class PatientServiceTest {
     }
 
     @Test
-    void findAll_shouldReturnListOfPatients() {
+    void searchPatients_shouldReturnPagedPatientsWithFilters() {
+
+        // ---- Arrange ----
         Patient patient1 = new Patient();
         patient1.setCpf("111.111.111-11");
+
         Patient patient2 = new Patient();
         patient2.setCpf("222.222.222-22");
 
-        List<Patient> patients = List.of(patient1, patient2);
+        Page<Patient> patientsPage = new PageImpl<>(List.of(patient1, patient2));
+
+        PatientFilterDTO filterDTO = new PatientFilterDTO();
+        Pageable pageable = PageRequest.of(0, 10);
 
         when(authService.getCurrentUserSub()).thenReturn(userId);
 
-        when(patientRepository.findAllByKeycloakUserId(userId)).thenReturn(patients);
-        when(patientMapper.entityToResponseDTO(patient1)).thenReturn(new PatientResponseDTO() {{ setCpf(patient1.getCpf()); }});
-        when(patientMapper.entityToResponseDTO(patient2)).thenReturn(new PatientResponseDTO() {{ setCpf(patient2.getCpf()); }});
+        when(patientRepository.findAll(
+                ArgumentMatchers.<Specification<Patient>>any(),
+                eq(pageable)
+        )).thenReturn(patientsPage);
 
-        List<PatientResponseDTO> result = patientService.findAll();
 
-        assertEquals(2, result.size());
-        assertEquals("111.111.111-11", result.get(0).getCpf());
-        assertEquals("222.222.222-22", result.get(1).getCpf());
+        when(patientMapper.entityToResponseDTO(patient1)).thenReturn(
+                new PatientResponseDTO() {{ setCpf("111.111.111-11"); }}
+        );
+        when(patientMapper.entityToResponseDTO(patient2)).thenReturn(
+                new PatientResponseDTO() {{ setCpf("222.222.222-22"); }}
+        );
+
+        // ---- Act ----
+        Page<PatientResponseDTO> result = patientService.searchPatients(filterDTO, pageable);
+
+        // ---- Assert ----
+        assertEquals(2, result.getTotalElements());
+        assertEquals("111.111.111-11", result.getContent().get(0).getCpf());
+        assertEquals("222.222.222-22", result.getContent().get(1).getCpf());
+    }
+
+    @Test
+    void searchPatients_shouldFilterByName() {
+
+        Patient patient = new Patient();
+        patient.setName("João Silva");
+        patient.setCpf("111.111.111-11");
+
+        Page<Patient> patientsPage = new PageImpl<>(List.of(patient));
+
+        PatientFilterDTO filterDTO = new PatientFilterDTO();
+        filterDTO.setName("João");
+
+        Pageable pageable = PageRequest.of(0, 10);
+
+        when(authService.getCurrentUserSub()).thenReturn(userId);
+
+        when(patientRepository.findAll(
+                ArgumentMatchers.<Specification<Patient>>any(),
+                eq(pageable)
+        )).thenReturn(patientsPage);
+
+        when(patientMapper.entityToResponseDTO(patient))
+                .thenReturn(new PatientResponseDTO() {{
+                    setName("João Silva");
+                    setCpf("111.111.111-11");
+                }});
+
+        Page<PatientResponseDTO> result = patientService.searchPatients(filterDTO, pageable);
+
+        assertEquals(1, result.getTotalElements());
+        assertEquals("João Silva", result.getContent().get(0).getName());
+    }
+
+    @Test
+    void searchPatients_shouldFilterByCpf() {
+
+        Patient patient = new Patient();
+        patient.setCpf("222.222.222-22");
+
+        Page<Patient> patientsPage = new PageImpl<>(List.of(patient));
+
+        PatientFilterDTO filterDTO = new PatientFilterDTO();
+        filterDTO.setCpf("222.222.222-22");
+
+        Pageable pageable = PageRequest.of(0, 10);
+
+        when(authService.getCurrentUserSub()).thenReturn(userId);
+
+        when(patientRepository.findAll(
+                ArgumentMatchers.<Specification<Patient>>any(),
+                eq(pageable)
+        )).thenReturn(patientsPage);
+
+        when(patientMapper.entityToResponseDTO(patient))
+                .thenReturn(new PatientResponseDTO() {{
+                    setCpf("222.222.222-22");
+                }});
+
+        Page<PatientResponseDTO> result = patientService.searchPatients(filterDTO, pageable);
+
+        assertEquals(1, result.getTotalElements());
+        assertEquals("222.222.222-22", result.getContent().get(0).getCpf());
     }
 }

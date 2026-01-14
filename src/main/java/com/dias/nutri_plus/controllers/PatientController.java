@@ -1,5 +1,6 @@
 package com.dias.nutri_plus.controllers;
 
+import com.dias.nutri_plus.dtos.patient.PatientFilterDTO;
 import com.dias.nutri_plus.dtos.patient.PatientRequestDTO;
 import com.dias.nutri_plus.dtos.patient.PatientResponseDTO;
 import com.dias.nutri_plus.entities.Patient;
@@ -7,13 +8,16 @@ import com.dias.nutri_plus.services.PatientService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -37,10 +41,10 @@ public class PatientController {
     return ResponseEntity.created(uri).body(patient);
   }
 
-  @Operation(summary = "Find All Patients", operationId = "findAllPatients")
+  @Operation(summary = "Search Patients with or without filters", operationId = "searchPatients")
   @GetMapping
-  public ResponseEntity<List<PatientResponseDTO>> listAll() {
-    return ResponseEntity.ok(patientService.findAll());
+  public ResponseEntity<Page<PatientResponseDTO>> searchPatients(@ParameterObject PatientFilterDTO filters, @PageableDefault Pageable pageable) {
+    return ResponseEntity.ok(patientService.searchPatients(filters, pageable));
   }
 
   @Operation(summary = "Find Patient by ID", operationId = "findPatientById")
