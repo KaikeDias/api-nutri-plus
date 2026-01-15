@@ -45,7 +45,7 @@ class PatientServiceTest {
     private static final String USER_ID = "12345";
     private static final String FIRST_CPF = "111.111.111-11";
     private static final String SECOND_CPF = "222.222.222-22";
-
+    private static final String PATIENT_NAME = "João Silva";
 
     @Test
     void createShouldSavePatientWhenCpfNotExists() {
@@ -91,9 +91,7 @@ class PatientServiceTest {
         when(patientRepository.findByCpfAndKeycloakUserId(requestDTO.getCpf(), USER_ID))
                 .thenReturn(Optional.of(existingPatient));
 
-        ConflictError exception = assertThrows(ConflictError.class, () -> {
-            patientService.create(requestDTO);
-        });
+        ConflictError exception = assertThrows(ConflictError.class, () -> patientService.create(requestDTO));
 
         assertEquals("A patient with this CPF already exists!", exception.getMessage());
         verify(patientRepository, never()).save(any());
@@ -150,18 +148,22 @@ class PatientServiceTest {
                 eq(pageable)
         )).thenReturn(patientsPage);
 
+        PatientResponseDTO responseFirst = new PatientResponseDTO();
+        responseFirst.setCpf(FIRST_CPF);
 
         when(patientMapper.entityToResponseDTO(patient1)).thenReturn(
                 new PatientResponseDTO() {{ setCpf(FIRST_CPF); }}
         );
+
+        PatientResponseDTO responseSecond = new PatientResponseDTO();
+        responseSecond.setCpf(SECOND_CPF);
+
         when(patientMapper.entityToResponseDTO(patient2)).thenReturn(
                 new PatientResponseDTO() {{ setCpf(SECOND_CPF); }}
         );
 
-        // ---- Act ----
         Page<PatientResponseDTO> result = patientService.searchPatients(filterDTO, pageable);
 
-        // ---- Assert ----
         assertEquals(2, result.getTotalElements());
         assertEquals(FIRST_CPF, result.getContent().get(0).getCpf());
         assertEquals(SECOND_CPF, result.getContent().get(1).getCpf());
@@ -171,7 +173,7 @@ class PatientServiceTest {
     void searchPatientsShouldFilterByName() {
 
         Patient patient = new Patient();
-        patient.setName("João Silva");
+        patient.setName(PATIENT_NAME);
         patient.setCpf(FIRST_CPF);
 
         Page<Patient> patientsPage = new PageImpl<>(List.of(patient));
@@ -188,16 +190,17 @@ class PatientServiceTest {
                 eq(pageable)
         )).thenReturn(patientsPage);
 
+        PatientResponseDTO patientResponseDTO = new PatientResponseDTO();
+        patientResponseDTO.setName(PATIENT_NAME);
+        patientResponseDTO.setCpf(FIRST_CPF);
+
         when(patientMapper.entityToResponseDTO(patient))
-                .thenReturn(new PatientResponseDTO() {{
-                    setName("João Silva");
-                    setCpf(FIRST_CPF);
-                }});
+                .thenReturn(patientResponseDTO);
 
         Page<PatientResponseDTO> result = patientService.searchPatients(filterDTO, pageable);
 
         assertEquals(1, result.getTotalElements());
-        assertEquals("João Silva", result.getContent().get(0).getName());
+        assertEquals(PATIENT_NAME, result.getContent().get(0).getName());
     }
 
     @Test
@@ -220,10 +223,11 @@ class PatientServiceTest {
                 eq(pageable)
         )).thenReturn(patientsPage);
 
+        PatientResponseDTO responseSecond = new PatientResponseDTO();
+        responseSecond.setCpf(SECOND_CPF);
+
         when(patientMapper.entityToResponseDTO(patient))
-                .thenReturn(new PatientResponseDTO() {{
-                    setCpf(SECOND_CPF);
-                }});
+                .thenReturn(responseSecond);
 
         Page<PatientResponseDTO> result = patientService.searchPatients(filterDTO, pageable);
 
