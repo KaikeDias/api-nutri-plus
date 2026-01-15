@@ -97,6 +97,7 @@
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct-processor</artifactId>
 			<version>1.6.3</version>
+			<scope>provided</scope>
 		</dependency>
 
         <dependency>
@@ -158,7 +159,6 @@
 				<version>0.8.11</version>
 
 				<executions>
-					<!-- Ativa o agente antes dos testes -->
 					<execution>
 						<id>prepare-agent</id>
 						<goals>
@@ -166,10 +166,9 @@
 						</goals>
 					</execution>
 
-					<!-- Gera o relatório após os testes -->
 					<execution>
 						<id>report</id>
-						<phase>test</phase>
+						<phase>verify</phase>
 						<goals>
 							<goal>report</goal>
 						</goals>
