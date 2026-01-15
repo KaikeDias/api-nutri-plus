@@ -151,16 +151,12 @@ class PatientServiceTest {
         PatientResponseDTO responseFirst = new PatientResponseDTO();
         responseFirst.setCpf(FIRST_CPF);
 
-        when(patientMapper.entityToResponseDTO(patient1)).thenReturn(
-                new PatientResponseDTO() {{ setCpf(FIRST_CPF); }}
-        );
+        when(patientMapper.entityToResponseDTO(patient1)).thenReturn(responseFirst);
 
         PatientResponseDTO responseSecond = new PatientResponseDTO();
         responseSecond.setCpf(SECOND_CPF);
 
-        when(patientMapper.entityToResponseDTO(patient2)).thenReturn(
-                new PatientResponseDTO() {{ setCpf(SECOND_CPF); }}
-        );
+        when(patientMapper.entityToResponseDTO(patient2)).thenReturn(responseSecond);
 
         Page<PatientResponseDTO> result = patientService.searchPatients(filterDTO, pageable);
 
