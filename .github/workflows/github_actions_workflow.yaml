@@ -16,9 +16,6 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Build and test
-        run: mvn clean verify
-
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v7
         env:
@@ -26,7 +23,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
+            mvn clean verify sonar:sonar
             -Dsonar.organization=kaikedias
             -Dsonar.projectKey=KaikeDias_api-nutri-plus
-            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
-            -Dsonar.java.binaries=target/classes
