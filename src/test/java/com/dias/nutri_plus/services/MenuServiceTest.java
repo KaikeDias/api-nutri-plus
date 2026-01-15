@@ -1,7 +1,6 @@
 package com.dias.nutri_plus.services;
 
 import com.dias.nutri_plus.dtos.menu.MealRequestDTO;
-import com.dias.nutri_plus.entities.Food;
 import com.dias.nutri_plus.entities.Meal;
 import com.dias.nutri_plus.entities.Menu;
 import com.dias.nutri_plus.entities.Patient;
