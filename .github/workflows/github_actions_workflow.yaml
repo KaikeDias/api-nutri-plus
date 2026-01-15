@@ -19,6 +19,9 @@ jobs:
       - name: Build and test
         run: mvn clean test
 
+      - name: Build and test
+        run: mvn clean verify
+
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         env:
