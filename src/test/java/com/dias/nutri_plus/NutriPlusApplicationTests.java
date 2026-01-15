@@ -10,6 +10,11 @@ class NutriPlusApplicationTests {
 
 	@Test
 	void contextLoads() {
+		/*
+		 * This test is intentionally empty.
+		 * Its purpose is to verify that the Spring application context
+		 * loads successfully without throwing exceptions.
+		 */
 	}
 
 }

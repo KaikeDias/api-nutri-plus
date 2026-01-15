@@ -8,6 +8,11 @@ import org.springframework.util.StringUtils;
 
 
 public class PatientSpecification {
+
+    private PatientSpecification() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static Specification<Patient> filter(PatientFilterDTO patientFilterDTO) {
         return (root, query, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder.conjunction();

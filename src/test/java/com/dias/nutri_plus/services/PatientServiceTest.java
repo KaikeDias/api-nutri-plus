@@ -42,10 +42,13 @@ class PatientServiceTest {
     @InjectMocks
     private PatientService patientService;
 
-    private final String userId = "12345";
+    private static final String USER_ID = "12345";
+    private static final String FIRST_CPF = "111.111.111-11";
+    private static final String SECOND_CPF = "222.222.222-22";
+
 
     @Test
-    void create_shouldSavePatient_whenCpfNotExists() {
+    void createShouldSavePatientWhenCpfNotExists() {
         PatientRequestDTO requestDTO = new PatientRequestDTO();
         requestDTO.setCpf("54584471070");
 
@@ -54,14 +57,14 @@ class PatientServiceTest {
 
         Patient savedPatient = new Patient();
         savedPatient.setCpf(requestDTO.getCpf());
-        savedPatient.setKeycloakUserId(userId);
+        savedPatient.setKeycloakUserId(USER_ID);
 
         PatientResponseDTO responseDTO = new PatientResponseDTO();
         responseDTO.setCpf(requestDTO.getCpf());
 
-        when(authService.getCurrentUserSub()).thenReturn(userId);
+        when(authService.getCurrentUserSub()).thenReturn(USER_ID);
 
-        when(patientRepository.findByCpfAndKeycloakUserId(requestDTO.getCpf(), userId))
+        when(patientRepository.findByCpfAndKeycloakUserId(requestDTO.getCpf(), USER_ID))
                 .thenReturn(Optional.empty());
         when(patientMapper.requestToEntity(requestDTO)).thenReturn(patientEntity);
         when(patientRepository.save(patientEntity)).thenReturn(savedPatient);
@@ -76,16 +79,16 @@ class PatientServiceTest {
 
 
     @Test
-    void create_shouldThrowConflictError_whenCpfExists() {
+    void createShouldThrowConflictErrorWhenCpfExists() {
         PatientRequestDTO requestDTO = new PatientRequestDTO();
         requestDTO.setCpf("111.222.333-44");
 
         Patient existingPatient = new Patient();
         existingPatient.setCpf(requestDTO.getCpf());
 
-        when(authService.getCurrentUserSub()).thenReturn(userId);
+        when(authService.getCurrentUserSub()).thenReturn(USER_ID);
 
-        when(patientRepository.findByCpfAndKeycloakUserId(requestDTO.getCpf(), userId))
+        when(patientRepository.findByCpfAndKeycloakUserId(requestDTO.getCpf(), USER_ID))
                 .thenReturn(Optional.of(existingPatient));
 
         ConflictError exception = assertThrows(ConflictError.class, () -> {
@@ -97,15 +100,15 @@ class PatientServiceTest {
     }
 
     @Test
-    void findById_shouldReturnPatient_whenFound() {
+    void findByIdShouldReturnPatientWhenFound() {
         UUID id = UUID.randomUUID();
         Patient patient = new Patient();
         patient.setId(id);
-        patient.setKeycloakUserId(userId);
+        patient.setKeycloakUserId(USER_ID);
 
-        when(authService.getCurrentUserSub()).thenReturn(userId);
+        when(authService.getCurrentUserSub()).thenReturn(USER_ID);
 
-        when(patientRepository.findByIdAndKeycloakUserId(id, userId)).thenReturn(Optional.of(patient));
+        when(patientRepository.findByIdAndKeycloakUserId(id, USER_ID)).thenReturn(Optional.of(patient));
 
         Patient result = patientService.findById(id);
 
@@ -114,33 +117,33 @@ class PatientServiceTest {
     }
 
     @Test
-    void findById_shouldThrowNotFoundError_whenNotFound() {
+    void findByIdShouldThrowNotFoundErrorWhenNotFound() {
         UUID id = UUID.randomUUID();
 
-        when(authService.getCurrentUserSub()).thenReturn(userId);
+        when(authService.getCurrentUserSub()).thenReturn(USER_ID);
 
-        when(patientRepository.findByIdAndKeycloakUserId(id, userId)).thenReturn(Optional.empty());
+        when(patientRepository.findByIdAndKeycloakUserId(id, USER_ID)).thenReturn(Optional.empty());
 
         NotFoundError exception = assertThrows(NotFoundError.class, () -> patientService.findById(id));
         assertEquals("Patient not found", exception.getMessage());
     }
 
     @Test
-    void searchPatients_shouldReturnPagedPatientsWithFilters() {
+    void searchPatientsShouldReturnPagedPatientsWithFilters() {
 
         // ---- Arrange ----
         Patient patient1 = new Patient();
-        patient1.setCpf("111.111.111-11");
+        patient1.setCpf(FIRST_CPF);
 
         Patient patient2 = new Patient();
-        patient2.setCpf("222.222.222-22");
+        patient2.setCpf(SECOND_CPF);
 
         Page<Patient> patientsPage = new PageImpl<>(List.of(patient1, patient2));
 
         PatientFilterDTO filterDTO = new PatientFilterDTO();
         Pageable pageable = PageRequest.of(0, 10);
 
-        when(authService.getCurrentUserSub()).thenReturn(userId);
+        when(authService.getCurrentUserSub()).thenReturn(USER_ID);
 
         when(patientRepository.findAll(
                 ArgumentMatchers.<Specification<Patient>>any(),
@@ -149,10 +152,10 @@ class PatientServiceTest {
 
 
         when(patientMapper.entityToResponseDTO(patient1)).thenReturn(
-                new PatientResponseDTO() {{ setCpf("111.111.111-11"); }}
+                new PatientResponseDTO() {{ setCpf(FIRST_CPF); }}
         );
         when(patientMapper.entityToResponseDTO(patient2)).thenReturn(
-                new PatientResponseDTO() {{ setCpf("222.222.222-22"); }}
+                new PatientResponseDTO() {{ setCpf(SECOND_CPF); }}
         );
 
         // ---- Act ----
@@ -160,16 +163,16 @@ class PatientServiceTest {
 
         // ---- Assert ----
         assertEquals(2, result.getTotalElements());
-        assertEquals("111.111.111-11", result.getContent().get(0).getCpf());
-        assertEquals("222.222.222-22", result.getContent().get(1).getCpf());
+        assertEquals(FIRST_CPF, result.getContent().get(0).getCpf());
+        assertEquals(SECOND_CPF, result.getContent().get(1).getCpf());
     }
 
     @Test
-    void searchPatients_shouldFilterByName() {
+    void searchPatientsShouldFilterByName() {
 
         Patient patient = new Patient();
         patient.setName("João Silva");
-        patient.setCpf("111.111.111-11");
+        patient.setCpf(FIRST_CPF);
 
         Page<Patient> patientsPage = new PageImpl<>(List.of(patient));
 
@@ -178,7 +181,7 @@ class PatientServiceTest {
 
         Pageable pageable = PageRequest.of(0, 10);
 
-        when(authService.getCurrentUserSub()).thenReturn(userId);
+        when(authService.getCurrentUserSub()).thenReturn(USER_ID);
 
         when(patientRepository.findAll(
                 ArgumentMatchers.<Specification<Patient>>any(),
@@ -188,7 +191,7 @@ class PatientServiceTest {
         when(patientMapper.entityToResponseDTO(patient))
                 .thenReturn(new PatientResponseDTO() {{
                     setName("João Silva");
-                    setCpf("111.111.111-11");
+                    setCpf(FIRST_CPF);
                 }});
 
         Page<PatientResponseDTO> result = patientService.searchPatients(filterDTO, pageable);
@@ -198,19 +201,19 @@ class PatientServiceTest {
     }
 
     @Test
-    void searchPatients_shouldFilterByCpf() {
+    void searchPatientsShouldFilterByCpf() {
 
         Patient patient = new Patient();
-        patient.setCpf("222.222.222-22");
+        patient.setCpf(SECOND_CPF);
 
         Page<Patient> patientsPage = new PageImpl<>(List.of(patient));
 
         PatientFilterDTO filterDTO = new PatientFilterDTO();
-        filterDTO.setCpf("222.222.222-22");
+        filterDTO.setCpf(SECOND_CPF);
 
         Pageable pageable = PageRequest.of(0, 10);
 
-        when(authService.getCurrentUserSub()).thenReturn(userId);
+        when(authService.getCurrentUserSub()).thenReturn(USER_ID);
 
         when(patientRepository.findAll(
                 ArgumentMatchers.<Specification<Patient>>any(),
@@ -219,12 +222,12 @@ class PatientServiceTest {
 
         when(patientMapper.entityToResponseDTO(patient))
                 .thenReturn(new PatientResponseDTO() {{
-                    setCpf("222.222.222-22");
+                    setCpf(SECOND_CPF);
                 }});
 
         Page<PatientResponseDTO> result = patientService.searchPatients(filterDTO, pageable);
 
         assertEquals(1, result.getTotalElements());
-        assertEquals("222.222.222-22", result.getContent().get(0).getCpf());
+        assertEquals(SECOND_CPF, result.getContent().get(0).getCpf());
     }
 }

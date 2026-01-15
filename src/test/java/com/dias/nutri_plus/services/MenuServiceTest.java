@@ -48,10 +48,10 @@ class MenuServiceTest {
     @InjectMocks
     private MenuService menuService;
 
-    private final String CURRENT_USER_ID = "user-123";
+    private static final String CURRENT_USER_ID = "user-123";
 
     @Test
-    void addMeal_shouldAddMealSuccessfully() {
+    void addMealShouldAddMealSuccessfully() {
         UUID patientId = UUID.randomUUID();
         UUID menuId = UUID.randomUUID();
 
@@ -83,7 +83,7 @@ class MenuServiceTest {
     }
 
     @Test
-    void updateMeal_shouldUpdateMealSuccessfully() {
+    void updateMealShouldUpdateMealSuccessfully() {
         UUID mealId = UUID.randomUUID();
 
         Patient patient = new Patient();
@@ -116,7 +116,7 @@ class MenuServiceTest {
     }
 
     @Test
-    void updateMeal_shouldThrowNotFoundError_whenMealBelongsToAnotherUser() {
+    void updateMealShouldThrowNotFoundErrorWhenMealBelongsToAnotherUser() {
         UUID mealId = UUID.randomUUID();
 
         Patient patient = new Patient();
@@ -136,16 +136,14 @@ class MenuServiceTest {
         lenient().when(authService.getCurrentUserSub()).thenReturn(CURRENT_USER_ID);
         when(mealRepository.findById(mealId)).thenReturn(Optional.of(meal));
 
-        NotFoundError exception = assertThrows(NotFoundError.class, () -> {
-            menuService.updateMeal(mealId, dto);
-        });
+        NotFoundError exception = assertThrows(NotFoundError.class, () ->  menuService.updateMeal(mealId, dto));
 
         assertEquals("Meal not found for current user", exception.getMessage());
         verify(mealRepository, never()).save(any());
     }
 
     @Test
-    void findMenuByPatientId_shouldReturnMenu_whenMenuExists() {
+    void findMenuByPatientIdShouldReturnMenuWhenMenuExists() {
         UUID patientId = UUID.randomUUID();
         Patient patient = new Patient();
         patient.setId(patientId);
@@ -166,7 +164,7 @@ class MenuServiceTest {
     }
 
     @Test
-    void findMenuByPatientId_shouldThrowNotFoundError_whenMenuDoesNotExist() {
+    void findMenuByPatientIdShouldThrowNotFoundErrorWhenMenuDoesNotExist() {
         UUID patientId = UUID.randomUUID();
         Patient patient = new Patient();
         patient.setId(patientId);
@@ -176,9 +174,7 @@ class MenuServiceTest {
         when(patientService.findById(patientId)).thenReturn(patient);
         when(menuRepository.findByPatient(patient)).thenReturn(Optional.empty());
 
-        NotFoundError exception = assertThrows(NotFoundError.class, () -> {
-            menuService.findMenuByPatientId(patientId);
-        });
+        NotFoundError exception = assertThrows(NotFoundError.class, () -> menuService.findMenuByPatientId(patientId));
 
         assertEquals("Menu not found", exception.getMessage());
     }
