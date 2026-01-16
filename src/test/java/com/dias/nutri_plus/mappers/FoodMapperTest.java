@@ -27,7 +27,6 @@ class FoodMapperTest {
 
     @Test
     void shouldMapFoodAndLinkSubstitutions() {
-        // arrange
         BaseFoodRequestDTO substitution = baseFood();
         substitution.setName("Fish");
 
@@ -35,10 +34,8 @@ class FoodMapperTest {
         dto.setFood(baseFood());
         dto.setSubstitutions(List.of(substitution));
 
-        // act
         Food food = foodMapper.requestToEntity(dto);
 
-        // assert
         assertNotNull(food);
         assertEquals("Chicken", food.getName());
         assertEquals("100", food.getQuantity());
@@ -49,7 +46,7 @@ class FoodMapperTest {
 
         Food sub = food.getSubstitutions().get(0);
         assertEquals("Fish", sub.getName());
-        assertEquals(food, sub.getParentFood()); // @AfterMapping
+        assertEquals(food, sub.getParentFood());
     }
 
     @Test

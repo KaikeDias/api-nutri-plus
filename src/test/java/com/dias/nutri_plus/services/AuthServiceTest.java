@@ -31,7 +31,6 @@ class AuthServiceTest {
 
     @Test
     void shouldReturnCurrentUserSubFromJwt() {
-        // arrange
         Jwt jwt = Jwt.withTokenValue("token")
                 .header("alg", "none")
                 .claim("sub", "user-123")
@@ -44,10 +43,8 @@ class AuthServiceTest {
         securityContext.setAuthentication(authentication);
         SecurityContextHolder.setContext(securityContext);
 
-        // act
         String sub = authService.getCurrentUserSub();
 
-        // assert
         assertEquals("user-123", sub);
     }
 }

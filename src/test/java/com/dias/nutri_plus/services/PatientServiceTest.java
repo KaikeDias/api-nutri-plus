@@ -129,7 +129,6 @@ class PatientServiceTest {
     @Test
     void searchPatientsShouldReturnPagedPatientsWithFilters() {
 
-        // ---- Arrange ----
         Patient patient1 = new Patient();
         patient1.setCpf(FIRST_CPF);
 
