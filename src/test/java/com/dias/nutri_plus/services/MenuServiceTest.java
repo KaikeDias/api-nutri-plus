@@ -14,6 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -48,6 +50,49 @@ class MenuServiceTest {
     private MenuService menuService;
 
     private static final String CURRENT_USER_ID = "user-123";
+
+    @Test
+    void shouldCreateMenuWhenNotExists() {
+        Patient patient = new Patient();
+        Menu savedMenu = new Menu();
+        savedMenu.setPatient(patient);
+
+        when(menuRepository.findByPatient(patient))
+                .thenReturn(Optional.empty());
+        when(menuRepository.save(any(Menu.class)))
+                .thenReturn(savedMenu);
+
+        Menu result = menuService.getOrCreateMenu(patient);
+
+        assertNotNull(result);
+        assertEquals(patient, result.getPatient());
+        verify(menuRepository).save(any(Menu.class));
+    }
+
+
+    @Test
+    void shouldReturnMealsPage() {
+        UUID patientId = UUID.randomUUID();
+        UUID menuId = UUID.randomUUID();
+
+        Patient patient = new Patient();
+        Menu menu = new Menu();
+        menu.setId(menuId);
+
+        Page<Meal> page = Page.empty();
+
+        when(patientService.findById(patientId)).thenReturn(patient);
+        when(menuRepository.findByPatient(patient))
+                .thenReturn(Optional.of(menu));
+        when(mealRepository.findAllByMenuId(menuId, Pageable.unpaged()))
+                .thenReturn(page);
+
+        Page<Meal> result = menuService.findMeals(patientId, Pageable.unpaged());
+
+        assertNotNull(result);
+        verify(mealRepository).findAllByMenuId(menuId, Pageable.unpaged());
+    }
+
 
     @Test
     void addMealShouldAddMealSuccessfully() {
@@ -177,4 +222,89 @@ class MenuServiceTest {
 
         assertEquals("Menu not found", exception.getMessage());
     }
+
+    @Test
+    void deleteMealShouldDeleteWhenUserIsOwner() {
+        UUID mealId = UUID.randomUUID();
+
+        Patient patient = new Patient();
+        patient.setKeycloakUserId(CURRENT_USER_ID);
+
+        Menu menu = new Menu();
+        menu.setPatient(patient);
+
+        Meal meal = new Meal();
+        meal.setId(mealId);
+        meal.setMenu(menu);
+
+        when(mealRepository.findById(mealId))
+                .thenReturn(Optional.of(meal));
+        when(authService.getCurrentUserSub())
+                .thenReturn(CURRENT_USER_ID);
+
+        menuService.deleteMeal(mealId);
+
+        verify(mealRepository).deleteById(mealId);
+    }
+
+    @Test
+    void deleteMealShouldThrowNotFoundWhenUserIsNotOwner() {
+        UUID mealId = UUID.randomUUID();
+
+        Patient patient = new Patient();
+        patient.setKeycloakUserId("another-user");
+
+        Menu menu = new Menu();
+        menu.setPatient(patient);
+
+        Meal meal = new Meal();
+        meal.setMenu(menu);
+
+        when(mealRepository.findById(mealId))
+                .thenReturn(Optional.of(meal));
+        when(authService.getCurrentUserSub())
+                .thenReturn(CURRENT_USER_ID);
+
+        NotFoundError exception = assertThrows(
+                NotFoundError.class,
+                () -> menuService.deleteMeal(mealId)
+        );
+
+        assertEquals("Meal not found for current user", exception.getMessage());
+        verify(mealRepository, never()).deleteById(any());
+    }
+
+    @Test
+    void deleteMealShouldThrowNotFoundWhenMealDoesNotExist() {
+        UUID mealId = UUID.randomUUID();
+
+        when(mealRepository.findById(mealId))
+                .thenReturn(Optional.empty());
+
+        NotFoundError exception = assertThrows(
+                NotFoundError.class,
+                () -> menuService.deleteMeal(mealId)
+        );
+
+        assertEquals("Meal not found", exception.getMessage());
+        verify(mealRepository, never()).deleteById(any());
+    }
+
+    @Test
+    void updateMealShouldThrowNotFoundWhenMealDoesNotExist() {
+        UUID mealId = UUID.randomUUID();
+        MealRequestDTO dto = new MealRequestDTO();
+
+        when(mealRepository.findById(mealId))
+                .thenReturn(Optional.empty());
+
+        NotFoundError exception = assertThrows(
+                NotFoundError.class,
+                () -> menuService.updateMeal(mealId, dto)
+        );
+
+        assertEquals("Meal not found", exception.getMessage());
+        verify(mealRepository, never()).save(any());
+    }
+
 }
