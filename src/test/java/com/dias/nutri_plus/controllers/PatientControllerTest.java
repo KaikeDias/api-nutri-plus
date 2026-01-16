@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.client.RestTestClient;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 
 import static com.dias.nutri_plus.utils.constants.CommonConstants.TOKEN;
 import static com.dias.nutri_plus.utils.constants.PatientControllerConstants.*;
