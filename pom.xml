@@ -160,13 +160,26 @@
 
                 <configuration>
                     <excludes>
+                        <!-- Infra -->
+                        <exclude>**/*Application*</exclude>
                         <exclude>**/config/**</exclude>
-                        <exclude>**/dtos/**</exclude>
-                        <exclude>**/exceptions/**</exclude>
                         <exclude>**/security/**</exclude>
-                        <exclude>**/db/**</exclude>
+
+                        <!-- Web / API -->
+                        <exclude>**/controllers/**</exclude>
+                        <exclude>**/exceptions/**</exclude>
+
+                        <!-- Boilerplate -->
+                        <exclude>**/entities/**</exclude>
+                        <exclude>**/dto/**</exclude>
+
+                        <!-- Utils sem lógica -->
+                        <exclude>**/utils/RestErrorMessage*</exclude>
+
+                        <!-- Enums simples -->
                         <exclude>**/enums/**</exclude>
                     </excludes>
+
                 </configuration>
 
 				<executions>
