@@ -3,8 +3,12 @@ package com.dias.nutri_plus.dtos.menu;
 import com.dias.nutri_plus.enums.Unit;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 public class BaseFoodRequestDTO {
 
